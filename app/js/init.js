@@ -11,7 +11,14 @@ function init () {
       world.add(bot);
       world.setRandomPosition(bot);
     });
-  })
+  });
+
+  _.times(1, function() {
+    _.tap(new Resource(), function(resource) {
+        world.add(resource);
+        world.setRandomPosition(resource);
+    });
+  });
 
   stage.addChild(world.sprite);
 
