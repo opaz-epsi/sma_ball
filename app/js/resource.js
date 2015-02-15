@@ -4,8 +4,18 @@ function Resource() {
   
   var agent = new Agent("Resource", RESOURCE_RADIUS, RESOURCE_COLOR);
 
-  return extend(agent, {
+  var attached = [];
+  function handleCollision(collided, physicsHelper) {
+    if(collided.type === "Resource") {
+        if(!_.contains(attached, collided)) {
+          physicsHelper.attachAgents(agent, collided, 0.1);
+          attached.push(collided);
+        }
+    }
+  }
 
+  return extend(agent, {
+    handleCollision: handleCollision
   });
 }
 
