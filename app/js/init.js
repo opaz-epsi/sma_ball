@@ -6,9 +6,12 @@ function init () {
 
   var world = new World();
 
-  var bot = new Bot();
-  world.add(bot);
-  world.setRandomPosition(bot);
+  _.times(100, function() {
+    _.tap(new Bot(), function(bot) {
+      world.add(bot);
+      world.setRandomPosition(bot);
+    });
+  })
 
   stage.addChild(world.sprite);
 
