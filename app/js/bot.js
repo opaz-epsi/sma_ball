@@ -12,6 +12,19 @@ function Bot() {
                               y:-10+Math.random() * 20});
   }
 
+  var resourceConstraint = null;
+  function handleCollision(collided, physicsHelper) {
+    if(collided.type === "Resource") {
+      if(!resourceConstraint) {
+        resourceConstraint = physicsHelper.attachAgents(agent, collided, 1);
+      } else {
+        physicsHelper.detachAgents(resourceConstraint);
+        resourceConstraint = null;
+      }
+      delay = 0;
+    }
+  }
+
   function update(timestamp) {
     agent.update(timestamp);
     delay -= timestamp;
@@ -23,5 +36,6 @@ function Bot() {
 
   return extend(agent, {
     update: update,
+    handleCollision: handleCollision
  });
 }
