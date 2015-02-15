@@ -4,13 +4,24 @@ function Bot() {
 
   var agent = new Agent("Bot", BOT_RADIUS, BOT_COLOR);
 
+  var delay = 0;
+
+  function addRandomVelocity() {
+    Matter.Body.setVelocity(agent.getBody(), 
+                            { x:-10+Math.random() * 20,
+                              y:-10+Math.random() * 20});
+  }
+
   function update(timestamp) {
     agent.update(timestamp);
-
+    delay -= timestamp;
+    if(delay <= 0) {
+      addRandomVelocity();
+      delay = 2000 * Math.random() + 500;
+    }
   }
 
   return extend(agent, {
     update: update,
-
  });
 }
