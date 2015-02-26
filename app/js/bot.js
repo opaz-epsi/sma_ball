@@ -10,13 +10,10 @@ function Bot() {
   var collidedResource = null;
 
   var expertSystem = new ExpertSystem();
-  
-  var initRules = function() {
-    expertSystem.addRule(["Time to move", "Saw resource", "20%"],   "Move to resource");
-    expertSystem.addRule(["Time to move"],                          "Move random");
-    expertSystem.addRule(["No resource", "Touched resource"],       "Grab resource");
-    expertSystem.addRule(["Has resource", "Touched resource"],      "Release resource");
-  }();
+  expertSystem.addRule(["Time to move", "Saw resource", "20%"],   "Move to resource");
+  expertSystem.addRule(["Time to move"],                          "Move random");
+  expertSystem.addRule(["No resource", "Touched resource"],       "Grab resource");
+  expertSystem.addRule(["Has resource", "Touched resource"],      "Release resource");
 
   function perceive() {
     var perceived = [];
@@ -26,6 +23,7 @@ function Bot() {
     if(collidedResource)        { perceived.push("Touched resource"); }
     if(targetResource)          { perceived.push("Saw resource"); }
     if(Math.random() > 0.2)     { perceived.push("20%"); }
+
     return perceived;
   }
   
