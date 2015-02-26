@@ -6,6 +6,58 @@ function Bot() {
 
   var delay = 0;
   var targetResource = null;
+  var resourceConstraint = null;
+  var collidedResource = null;
+
+  var expertSystem = new ExpertSystem();
+  
+  var initRules = function() {
+    expertSystem.addRule(["Time to move", "Saw resource", "20%"],   "Move to resource");
+    expertSystem.addRule(["Time to move"],                          "Move random");
+    expertSystem.addRule(["No resource", "Touched resource"],       "Grab resource");
+    expertSystem.addRule(["Has resource", "Touched resource"],      "Release resource");
+  }();
+
+  function perceive() {
+    var perceived = [];
+    if(delay <= 0)              { perceived.push("Time to move"); }
+    if(!resourceConstraint)     { perceived.push("No resource"); }
+    if(resourceConstraint)      { perceived.push("Has resource"); }
+    if(collidedResource)        { perceived.push("Touched resource"); }
+    if(targetResource)          { perceived.push("Saw resource"); }
+    if(Math.random() > 0.2)     { perceived.push("20%"); }
+    return perceived;
+  }
+  
+  function analyze(facts) {
+    expertSystem.resetFacts();
+    _.each(facts, function(f) {
+      expertSystem.setFactValue(f, true);
+    });
+
+    var infered = expertSystem.infer();
+    if(infered.length > 0) {
+      return infered[0];
+    }
+    return null;
+  }
+  
+  function act(fact) {
+    switch(fact) {
+      case "Grab resource":
+        grabResource(collidedResource);  
+        return;
+      case "Release resource":
+        releaseResource();
+        return;
+      case "Move random":
+        addRandomVelocity();  
+        return;
+      case "Move to resource":
+        goToAgent(targetResource);
+        return;
+    }
+  }
 
   function addRandomVelocity() {
     Matter.Body.setVelocity(agent.getBody(), 
@@ -13,16 +65,18 @@ function Bot() {
                               y:-10+Math.random() * 20});
   }
 
-  var resourceConstraint = null;
+  function grabResource(resource) {
+    resourceConstraint = agent.getPhysicsHelper().attachAgents(agent, resource, 1);
+  }
+
+  function releaseResource() {
+    agent.getPhysicsHelper().detachAgents(resourceConstraint);
+    resourceConstraint = null;
+  }
+
   function handleCollision(collided) {
     if(collided.type === "Resource") {
-      if(!resourceConstraint) {
-        resourceConstraint = agent.getPhysicsHelper().attachAgents(agent, collided, 1);
-        } else {
-        agent.getPhysicsHelper().detachAgents(resourceConstraint);
-        resourceConstraint = null;
-      }
-      delay = 0;
+      collidedResource = collided;
     }
   }
 
@@ -40,20 +94,25 @@ function Bot() {
                           y:(target.getPosition().y - agent.getPosition().y)/10});
   }
 
-  function update(timestamp) {
-    agent.update(timestamp);
+  function updateTime(timestamp) {
     delay -= timestamp;
-    if(delay <= 0) {
-      if(targetResource && Math.random() > 0.2) {
-        goToAgent(targetResource);
-      } else {
-        addRandomVelocity();
-      }
-      delay = 2000 * Math.random() + 500;
-      //targetResource = null;
-    }
   }
 
+  function update(timestamp) {
+    agent.update(timestamp);
+    updateTime(timestamp);
+    
+    act(analyze(perceive()));
+    
+    postUpdate();
+  }
+
+  function postUpdate() {
+    if(delay <= 0) {
+      delay = Math.random() * 500 + 1000;
+    }
+    collidedResource = null;
+  }
   return extend(agent, {
     update: update,
     handleCollision: handleCollision,
