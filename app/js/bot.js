@@ -5,6 +5,7 @@ function Bot() {
   var agent = new Agent("Bot", BOT_RADIUS, BOT_COLOR);
 
   var delay = 0;
+  var targetResource = null;
 
   function addRandomVelocity() {
     Matter.Body.setVelocity(agent.getBody(), 
@@ -27,8 +28,9 @@ function Bot() {
 
   function handlePerception(perceived) {
     if(perceived.type === "Resource") {
-   //   console.log("perceived");
-   //   goToAgent(perceived);
+      if(perceived !== targetResource && !resourceConstraint) {
+        targetResource = perceived;
+      }
     }
   }
 
@@ -42,8 +44,13 @@ function Bot() {
     agent.update(timestamp);
     delay -= timestamp;
     if(delay <= 0) {
-      addRandomVelocity();
+      if(targetResource && Math.random() > 0.2) {
+        goToAgent(targetResource);
+      } else {
+        addRandomVelocity();
+      }
       delay = 2000 * Math.random() + 500;
+      //targetResource = null;
     }
   }
 
