@@ -7,8 +7,13 @@ function Agent(type, radius, color) {
   sprite.drawCircle(0,0, radius);
   sprite.endFill();
 
-  function setBody(value) {
-    body = value;
+  var physicsHelper = null;
+  
+  function setPhysicsHelper(helper) {
+    physicsHelper = helper;
+  }
+  function getPhysicsHelper() {
+    return physicsHelper;
   }
 
   function getBody() {
@@ -28,21 +33,27 @@ function Agent(type, radius, color) {
     sprite.y = getBody().position.y;
   }
 
-  function handleCollision(collided, physics) {
+  function handleCollision(collided) {
+  }
+
+  function handlePerception(perceived) {
   }
 
   return extend(null, {
     type:   type,
     sprite: sprite,
 
-    setBody: setBody,
     getBody: getBody,
+
+    setPhysicsHelper: setPhysicsHelper,
+    getPhysicsHelper: getPhysicsHelper,
 
     setPosition: setPosition,
     getPosition: getPosition,
 
     handleCollision: handleCollision,
+    handlePerception: handlePerception,
 
-    update: update,
+    update: update
   });
 }

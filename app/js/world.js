@@ -40,19 +40,6 @@ function World() {
   physics.addBody(rightWall);
   physics.addBody(topWall);
 
-
-  function add (agent) {
-    agents.push(agent);
-    botsContainer.addChild(agent.sprite);
-    physics.addBody(agent.getBody());
-    agent.getBody().agent = agent;
-  }
-
-  function setRandomPosition(agent) {
-    agent.setPosition({x:WALL_THICKNESS + Math.random() * WIDTH - WALL_THICKNESS*2,
-                       y:WALL_THICKNESS + Math.random() * HEIGHT - WALL_THICKNESS*2});
-  }
-
   var physicsHelper = {
     attachAgents: function (agentA, agentB, stiffness) {
       var constraint = Matter.Constraint.create({bodyA:agentA.getBody(), bodyB:agentB.getBody(), stiffness:stiffness});
@@ -66,13 +53,51 @@ function World() {
   };
 
 
+
+  function add (agent) {
+    agents.push(agent);
+    botsContainer.addChild(agent.sprite);
+    physics.addBody(agent.getBody());
+    agent.getBody().agent = agent;
+    agent.setPhysicsHelper(physicsHelper);
+  }
+
+  function setRandomPosition(agent) {
+    agent.setPosition({x:WALL_THICKNESS + Math.random() * WIDTH - WALL_THICKNESS*2,
+                       y:WALL_THICKNESS + Math.random() * HEIGHT - WALL_THICKNESS*2});
+  }
+
+  function processPerceptions() {
+    _.each(agents, function(agentA){
+      _.each(agents, function(agentB) {
+        if(perceives(agentA, agentB)) {
+          agentA.handlePerception(agentB);
+        }
+      });
+    }); 
+  }
+
+  function perceives(agentA, agentB) {
+    var distX = agentA.getPosition().x - agentB.getPosition().x;
+    var distY = agentA.getPosition().y - agentB.getPosition().y;
+    
+    var dist =  distX*distX + distY*distY;
+
+    return dist < 100*100;
+  }
+
+
   function processCollisions() {
     var collisions = physics.collisions();
     _.each(collisions, function(collision) {
-      if(collision.bodyA.agent && collision.bodyB.agent) {
-        collision.bodyA.agent.handleCollision(collision.bodyB.agent, physicsHelper);
-        collision.bodyB.agent.handleCollision(collision.bodyA.agent, physicsHelper);
+      
+      var agentA = collision.bodyA.agent;
+      var agentB = collision.bodyB.agent;
+      if( agentA && agentB) {
+        agentA.handleCollision(agentB);
+        agentB.handleCollision(agentA);
       }
+
     });
   }
 
@@ -84,6 +109,7 @@ function World() {
     physics.update(deltaTime);
     //physics.patchPositions();
     processCollisions();
+    processPerceptions();
   }
 
   return extend(null, {

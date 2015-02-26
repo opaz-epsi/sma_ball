@@ -13,16 +13,29 @@ function Bot() {
   }
 
   var resourceConstraint = null;
-  function handleCollision(collided, physicsHelper) {
+  function handleCollision(collided) {
     if(collided.type === "Resource") {
       if(!resourceConstraint) {
-        resourceConstraint = physicsHelper.attachAgents(agent, collided, 1);
-      } else {
-        physicsHelper.detachAgents(resourceConstraint);
+        resourceConstraint = agent.getPhysicsHelper().attachAgents(agent, collided, 1);
+        } else {
+        agent.getPhysicsHelper().detachAgents(resourceConstraint);
         resourceConstraint = null;
       }
       delay = 0;
     }
+  }
+
+  function handlePerception(perceived) {
+    if(perceived.type === "Resource") {
+   //   console.log("perceived");
+   //   goToAgent(perceived);
+    }
+  }
+
+  function goToAgent(target) {
+	    Matter.Body.setVelocity(agent.getBody(), 
+                        { x:(target.getPosition().x - agent.getPosition().x)/10,
+                          y:(target.getPosition().y - agent.getPosition().y)/10});
   }
 
   function update(timestamp) {
@@ -36,6 +49,7 @@ function Bot() {
 
   return extend(agent, {
     update: update,
-    handleCollision: handleCollision
+    handleCollision: handleCollision,
+    handlePerception: handlePerception
  });
 }

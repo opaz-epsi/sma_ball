@@ -13,7 +13,7 @@ function init () {
     });
   });
 
-  _.times(100, function() {
+  _.times(200, function() {
     _.tap(new Resource(), function(resource) {
         world.add(resource);
         world.setRandomPosition(resource);
