@@ -6,18 +6,16 @@ function init () {
 
   var world = new World();
 
-  _.times(100, function() {
+  _.times(30, function() {
     _.tap(new Bot(), function(bot) {
       world.add(bot);
       world.setRandomPosition(bot);
     });
   });
 
-  _.times(200, function() {
-    _.tap(new Resource(), function(resource) {
-        world.add(resource);
-        world.setRandomPosition(resource);
-    });
+  _.tap(new Ball(), function(ball) {
+    world.add(ball);
+    world.setRandomPosition(ball);
   });
 
   stage.addChild(world.sprite);
