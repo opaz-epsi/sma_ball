@@ -14,8 +14,19 @@ function Resource() {
     }
   }
 
+  function update(delta) {
+    agent.update(delta);
+    if(attached.length > 0) {
+      agent.sprite.clear();
+      agent.sprite.beginFill(0x0000FF);
+      agent.sprite.drawCircle(0,0, RESOURCE_RADIUS);
+      agent.sprite.endFill();
+    }
+  }
+
   return extend(agent, {
-    handleCollision: handleCollision
+    handleCollision: handleCollision,
+    update: update
   });
 }
 
