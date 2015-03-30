@@ -11,12 +11,11 @@ function Agent() {
     initRectAgent(arguments);
   }
 
-  var defaultPhysics = {density: 1, friction:0, restitution:0.5, mass:1};
   function initRoundAgent(arguments) {
     type =    arguments[0];
     radius =  arguments[1];
     color =   arguments[2];
-    body =    Matter.Bodies.circle(0, 0, radius, defaultPhysics);
+    body =    Matter.Bodies.circle(0, 0, radius, {density: 1, friction:0, restitution:0.5, mass:1});
     
     sprite = new PIXI.Graphics();
     sprite.beginFill(color);
@@ -26,11 +25,11 @@ function Agent() {
 
   function initRectAgent(arguments) {
     type =    arguments[0];
-    width =  arguments[1];
+    width =   arguments[1];
     height =  arguments[2];
     color =   arguments[3];
     
-    body =    Matter.Bodies.rectangle(0, 0, width, height, defaultPhysics);
+    body =    Matter.Bodies.rectangle(0, 0, width, height, {density: 1, friction:0, restitution:0.5, mass:1});
     
     sprite = new PIXI.Graphics();
     sprite.beginFill(color);
