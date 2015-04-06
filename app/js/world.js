@@ -1,4 +1,4 @@
-function World(team1, team2) {
+function World(team1, team2, hud) {
 
   var WIDTH = 800;
   var HEIGHT = 600;
@@ -116,7 +116,16 @@ function World(team1, team2) {
     agent.setPosition({x: agent.getPosition().x,
                        y: WALL_THICKNESS + 0.5 * (HEIGHT - WALL_THICKNESS*2)});
   }
-  
+
+  function processGoal(agent1, agent2) {
+    if( agent1 && agent2 &&
+        agent1.type === "GoalTarget" &&
+        agent2.type === "Ball" ) {
+      console.log("Goal !");
+      hud.addGoal(agent1.getTeam());
+    }
+  }
+
   function processPerceptions() {
     _.each(agents, function(agentA){
       _.each(agents, function(agentB) {
@@ -144,6 +153,7 @@ function World(team1, team2) {
       var agentA = collision.bodyA.agent;
       var agentB = collision.bodyB.agent;
       if( agentA && agentB) {
+        processGoal(agentA, agentB);
         agentA.handleCollision(agentB);
         agentB.handleCollision(agentA);
       }

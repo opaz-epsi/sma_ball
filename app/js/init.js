@@ -1,10 +1,14 @@
 function init () {
+  var team1 = "team 1";
+  var team2 = "team 2";
+
   var canvasElement = document.querySelector("#canvas");
 
   var stage = new PIXI.Stage(0xcccccc);
   var renderer = new PIXI.autoDetectRenderer(800,600, canvasElement);
 
-  var world = new World("team 1", "team 2");
+  var hud = new GameHud(team1, team2);
+  var world = new World(team1, team2, hud);
 
   _.times(80, function() {
     _.tap(new Bot(), function(bot) {
@@ -19,6 +23,8 @@ function init () {
   });
 
   stage.addChild(world.sprite);
+
+  hud.addTo(stage);
 
   var prevTimestamp = 0;
   function animate(timestamp) {

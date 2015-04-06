@@ -4,17 +4,10 @@ function Agent() {
   var sprite = null;
   var physicsHelper = null;
 
-  if(arguments.length === 3) {
-    initRoundAgent(arguments);
-  
-  } else if(arguments.length == 4) {
-    initRectAgent(arguments);
-  }
-
-  function initRoundAgent(arguments) {
-    type =    arguments[0];
-    radius =  arguments[1];
-    color =   arguments[2];
+  function initRoundAgent(args) {
+    type =    args[0];
+    radius =  args[1];
+    color =   args[2];
     body =    Matter.Bodies.circle(0, 0, radius, {density: 1, friction:0, restitution:0.5, mass:1});
     
     sprite = new PIXI.Graphics();
@@ -23,11 +16,11 @@ function Agent() {
     sprite.endFill();
   }
 
-  function initRectAgent(arguments) {
-    type =    arguments[0];
-    width =   arguments[1];
-    height =  arguments[2];
-    color =   arguments[3];
+  function initRectAgent(args) {
+    type =    args[0];
+    width =   args[1];
+    height =  args[2];
+    color =   args[3];
     
     body =    Matter.Bodies.rectangle(0, 0, width, height, {density: 1, friction:0, restitution:0.5, mass:1});
     
@@ -36,7 +29,14 @@ function Agent() {
     sprite.drawRect(-width/2,-height/2, width, height);
     sprite.endFill();
   }
+
+  if(arguments.length === 3) {
+    initRoundAgent(arguments);
   
+  } else if(arguments.length === 4) {
+    initRectAgent(arguments);
+  }
+
   function setPhysicsHelper(helper) {
     physicsHelper = helper;
   }
