@@ -5,23 +5,23 @@ function Bot(teamName, color) {
   var agent = new Agent("Bot", BOT_RADIUS, BOT_COLOR);
 
   var delay = 0;
-  var targetResource = null;
-  var resourceConstraint = null;
-  var collidedResource = null;
+  var targetBall = null;
+  var ballConstraint = null;
+  var collidedBall = null;
 
   var expertSystem = new ExpertSystem();
-  expertSystem.addRule(["Time to move", "Saw resource", "20%"],   "Move to resource");
-  expertSystem.addRule(["Time to move"],                          "Move random");
-  expertSystem.addRule(["No resource", "Touched resource"],       "Grab resource");
-  expertSystem.addRule(["Has resource", "Touched resource"],      "Release resource");
+  expertSystem.addRule(["No ball", "Time to move", "Saw ball", "20%"],   "Move to ball");
+  expertSystem.addRule(["No ball", "Time to move"],                      "Move random");
+  expertSystem.addRule(["No ball", "Touched ball"],                      "Grab ball");
+  //expertSystem.addRule(["Has ball", "Touched ball"],                     "Release ball");
 
   function perceive() {
     var perceived = [];
     if(delay <= 0)              { perceived.push("Time to move"); }
-    if(!resourceConstraint)     { perceived.push("No resource"); }
-    if(resourceConstraint)      { perceived.push("Has resource"); }
-    if(collidedResource)        { perceived.push("Touched resource"); }
-    if(targetResource)          { perceived.push("Saw resource"); }
+    if(!ballConstraint)     { perceived.push("No ball"); }
+    if(ballConstraint)      { perceived.push("Has ball"); }
+    if(collidedBall)        { perceived.push("Touched ball"); }
+    if(targetBall)          { perceived.push("Saw ball"); }
     if(Math.random() > 0.2)     { perceived.push("20%"); }
 
     return perceived;
@@ -42,17 +42,17 @@ function Bot(teamName, color) {
   
   function act(fact) {
     switch(fact) {
-      case "Grab resource":
-        grabResource(collidedResource);  
+      case "Grab ball":
+        grabBall(collidedBall);  
         return;
-      case "Release resource":
-        releaseResource();
+      case "Release ball":
+        releaseBall();
         return;
       case "Move random":
         addRandomVelocity();  
         return;
-      case "Move to resource":
-        goToAgent(targetResource);
+      case "Move to ball":
+        goToAgent(targetBall);
         return;
     }
   }
@@ -63,25 +63,25 @@ function Bot(teamName, color) {
                               y:-10+Math.random() * 20});
   }
 
-  function grabResource(resource) {
-    resourceConstraint = agent.getPhysicsHelper().attachAgents(agent, resource, 1);
+  function grabBall(ball) {
+    ballConstraint = agent.getPhysicsHelper().attachAgents(agent, ball, 1);
   }
 
-  function releaseResource() {
-    agent.getPhysicsHelper().detachAgents(resourceConstraint);
-    resourceConstraint = null;
+  function releaseBall() {
+    agent.getPhysicsHelper().detachAgents(ballConstraint);
+    ballConstraint = null;
   }
 
   function handleCollision(collided) {
-    if(collided.type === "Resource") {
-      collidedResource = collided;
+    if(collided.type === "Ball") {
+      collidedBall = collided;
     }
   }
 
   function handlePerception(perceived) {
-    if(perceived.type === "Resource") {
-      if(perceived !== targetResource && !resourceConstraint) {
-        targetResource = perceived;
+    if(perceived.type === "Ball") {
+      if(perceived !== targetBall && !ballConstraint) {
+        targetBall = perceived;
       }
     }
   }
@@ -109,7 +109,7 @@ function Bot(teamName, color) {
     if(delay <= 0) {
       delay = Math.random() * 500 + 1000;
     }
-    collidedResource = null;
+    collidedBall = null;
   }
 
   function getTeam() {

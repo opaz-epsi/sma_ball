@@ -1,4 +1,4 @@
-function World(team1, team2, ball, hud) {
+function World(team1, team2, hud) {
 
   var WIDTH = 800;
   var HEIGHT = 600;
@@ -51,10 +51,14 @@ function World(team1, team2, ball, hud) {
   physics.addBody(rightWall);
   physics.addBody(topWall);
 
+
   var physicsHelper = {
     attachAgents: function (agentA, agentB, stiffness) {
       var constraint = Matter.Constraint.create({bodyA:agentA.getBody(), bodyB:agentB.getBody(), stiffness:stiffness});
       physics.addConstraint(constraint);
+
+      if(agentA.type === "Ball") { agentA.registerConstraint(constraint); }
+      if(agentB.type === "Ball") { agentB.registerConstraint(constraint); }
 
       return constraint;
     },
@@ -98,6 +102,9 @@ function World(team1, team2, ball, hud) {
     add(post);
     post.setPosition({x: MAX_X - GOAL_POST_SIZE/2, y: CENTER_Y + GOAL_TARGET_SIZE/2 });
   }
+
+  var ball = new Ball(physics);
+  add(ball);
 
   addLeftGoal(team1.getName());
   addRightGoal(team2.getName());
@@ -181,7 +188,7 @@ function World(team1, team2, ball, hud) {
     });
 
     physics.update(deltaTime);
-    //physics.patchPositions();
+    physics.patchPositions();
     processCollisions();
     processPerceptions();
   }

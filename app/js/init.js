@@ -8,15 +8,13 @@ function init () {
     {ratio: 1, agent: Bot }
   ], AGENTS_BY_TEAM, 0x0000FF);
 
-  var ball = new Ball();
-
   var canvasElement = document.querySelector("#canvas");
 
   var stage = new PIXI.Stage(0xcccccc);
   var renderer = new PIXI.autoDetectRenderer(800,600, canvasElement);
 
   var hud = new GameHud(team1.getName(), team2.getName());
-  var world = new World(team1, team2, ball, hud);
+  var world = new World(team1, team2, hud);
 
   _.each(team1.getAgents(), function(agent) {
       world.add(agent);
@@ -25,8 +23,6 @@ function init () {
   _.each(team2.getAgents(), function(agent) {
       world.add(agent);
   });
-
-  world.add(ball);
 
   stage.addChild(world.sprite);
 
