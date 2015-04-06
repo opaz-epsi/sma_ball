@@ -1,6 +1,6 @@
-function Bot() {
+function Bot(teamName, color) {
   var BOT_RADIUS = 2;
-  var BOT_COLOR = 0x000000;
+  var BOT_COLOR = color;
 
   var agent = new Agent("Bot", BOT_RADIUS, BOT_COLOR);
 
@@ -111,9 +111,15 @@ function Bot() {
     }
     collidedResource = null;
   }
+
+  function getTeam() {
+    return team;
+  }
+
   return extend(agent, {
     update: update,
     handleCollision: handleCollision,
-    handlePerception: handlePerception
- });
+    handlePerception: handlePerception,
+    getTeam: getTeam
+  });
 }
