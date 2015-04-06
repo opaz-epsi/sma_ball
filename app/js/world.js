@@ -1,4 +1,4 @@
-function World(team1, team2, hud) {
+function World(team1, team2, ball, hud) {
 
   var WIDTH = 800;
   var HEIGHT = 600;
@@ -99,8 +99,8 @@ function World(team1, team2, hud) {
     post.setPosition({x: MAX_X - GOAL_POST_SIZE/2, y: CENTER_Y + GOAL_TARGET_SIZE/2 });
   }
 
-  addLeftGoal(team1);
-  addRightGoal(team2);
+  addLeftGoal(team1.getName());
+  addRightGoal(team2.getName());
   
   function setRandomPosition(agent) {
     agent.setPosition({x: WALL_THICKNESS + Math.random() * (WIDTH - WALL_THICKNESS*2),
@@ -117,12 +117,26 @@ function World(team1, team2, hud) {
                        y: WALL_THICKNESS + 0.5 * (HEIGHT - WALL_THICKNESS*2)});
   }
 
+  function resetPositions() {
+    _.each(team1.getAgents(), function(agent) {
+      setRandomPosition(agent);
+    });
+
+    _.each(team2.getAgents(), function(agent) {
+      setRandomPosition(agent);
+    });
+
+    setCenteredX(ball);
+    setCenteredY(ball);
+  }
+
   function processGoal(agent1, agent2) {
     if( agent1 && agent2 &&
         agent1.type === "GoalTarget" &&
         agent2.type === "Ball" ) {
       console.log("Goal !");
       hud.addGoal(agent1.getTeam());
+      resetPositions();
     }
   }
 
@@ -171,6 +185,8 @@ function World(team1, team2, hud) {
     processCollisions();
     processPerceptions();
   }
+
+  resetPositions();
 
   return extend(null, {
     add: add,
