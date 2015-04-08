@@ -4,10 +4,26 @@ function Ball(physics) {
 
   var agent = new Agent("Ball", 20,  BALL_COLOR);
   
+  var delay = 0;
   var constraints = [];
 
   function registerConstraint(constraint) {
     constraints.push(constraint);
+    startDelay();
+  }
+
+  function startDelay() {
+    if(delayFinished()) {
+      delay = 1000;
+    }
+  }
+
+  function delayFinished() {
+    return delay <= 0;
+  }
+
+  function resetDelay() {
+    delay = 0;
   }
 
   function removeAllConstraints() {
@@ -17,16 +33,19 @@ function Ball(physics) {
     constraints = [];
   }
 
-  var delay = 0;
   function update(deltaTime) {
     agent.update(deltaTime);
-    delay -= deltaTime;
-    if(delay <= 0) {
-      removeAllConstraints();
-      delay = 1000; 
+    if(constraints.length > 0) {
+      delay -= deltaTime;
+      if(delayFinished()) {
+        removeAllConstraints();
+        resetDelay(); 
+      }
     }
   }
 
+  resetDelay();
+  
   return extend(agent, {
     update: update,
     registerConstraint: registerConstraint,
