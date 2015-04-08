@@ -1,5 +1,6 @@
 function init () {
   var AGENTS_BY_TEAM = 40;
+  
   var team1 = new Team("team 1", [
     {ratio: 1, agent: Bot }
   ], AGENTS_BY_TEAM, 0xFF0000);
