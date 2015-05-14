@@ -94,6 +94,7 @@ function Bot(teamName, color) {
 
   function updateTime(timestamp) {
     delay -= timestamp;
+    console.log(getTeam());
   }
 
   function update(timestamp) {
@@ -113,7 +114,7 @@ function Bot(teamName, color) {
   }
 
   function getTeam() {
-    return team;
+    return teamName;
   }
 
   return extend(agent, {
